@@ -12,7 +12,6 @@ var suppliersRouter = require('./routes/suppliers');
 var productsRouter = require('./routes/products');
 var colorsRouter = require('./routes/colors');
 var employeesRouter = require('./routes/employees');
-// var customersRouter = require('./routes/customers');
 var ordersRouter = require('./routes/orders');
 var authRouter = require('./routes/auth');
 var loginRouter = require('./routes/login');
@@ -51,6 +50,7 @@ app.use('/auth', authRouter);
 app.use('/login', loginRouter);
 app.use('/upload', uploadRouter);
 app.use('/sizes', sizesRouter);
+// app.use('/ordersdetail', ordersdetailRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

@@ -38,7 +38,7 @@ productSchema.virtual('stock').get(function() {
   }, 0);
 });
 
-productSchema.virtual('totalQuantityByColor').get(function() {
+productSchema.virtual('stockByColor').get(function() {
   const totalQuantityByColor = {};
   this.variants.forEach(variant => {
     const colorId = variant.colorId.toString();
