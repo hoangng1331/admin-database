@@ -156,6 +156,24 @@ router.patch('/:id', function (req, res, next) {
     res.sendStatus(500);
   }
 });
+router.patch('/:id/orderDetails/:_id', function (req, res, next) {
+  const { id, _id } = req.params;
+  const { quantity } = req.body;
+  Order.updateOne(
+    { _id: id, 'orderDetails._id': _id },
+    { $set: { 'orderDetails.$.quantity': quantity } }
+  )
+    .then((result) => {
+      if (result.nModified === 0) {
+        res.status(404).send({ message: 'Order detail not found.' });
+      } else {
+        res.send({ message: 'Quantity updated.' });
+      }
+    })
+    .catch((err) => {
+      res.status(400).send({ message: err.message });
+    });
+});
 
 // DELETE
 router.delete('/:id', function (req, res, next) {

@@ -18,9 +18,11 @@ const orderDetailSchema = new Schema({
   quantity: { type: Number, require: true, min: 0 },
   price: { type: Number, required: true, min: 0, default: 0 },
   discount: { type: Number, default: 0 },
-  totalPrice: { type: Number, default: 0 },
 });
 
+orderDetailSchema.virtual('totalPrice').get(function() {
+  return this.quantity * this.price * (100 - this.discount) / 100;
+});
 // Virtual with Populate
 orderDetailSchema.virtual("product", {
   ref: "Product",
@@ -33,7 +35,8 @@ orderDetailSchema.virtual("color", {
   localField: "colorId",
   foreignField: "_id",
   justOne: false,
-});orderDetailSchema.virtual("size", {
+});
+orderDetailSchema.virtual("size", {
   ref: "Size",
   localField: "sizeId",
   foreignField: "_id",
@@ -117,7 +120,7 @@ const orderSchema = new Schema({
     required: false,
     validate: {
       validator: (value) => {
-        if (["Hòa Vang", "Hải Châu", "Thanh Khê", "Liên Chiểu", "Ngũ Hành Sơn", "Cẩm Lệ", "Sơn Trà"].includes(value)) {
+        if (["Hòa Vang", "Hải Châu", "Thanh Khê", "Liên Chiểu", "Ngũ Hành Sơn", "Cẩm Lệ", "Sơn Trà", "Ngoại thành"].includes(value)) {
           return true;
         }
         return false;
