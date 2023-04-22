@@ -14,6 +14,7 @@ var router = express.Router();
 router.get("/", function (req, res, next) {
   try {
     Login.find()
+      .populate({ path: 'name', select: 'firstName lastName fullName' })
       .then((result) => {
         res.send(result);
       })
@@ -30,6 +31,7 @@ router.get("/:id", function (req, res, next) {
   try {
     const { id } = req.params;
     Login.findById(id)
+    .populate({ path: 'name', select: 'firstName lastName fullName' })
       .then((result) => {
         res.send(result);
       })
@@ -42,7 +44,7 @@ router.get("/:id", function (req, res, next) {
 });
 router.get('/username/:username', async (req, res) => {
   try {
-    const user = await Login.findOne({ username: req.params.username });
+    const user = await Login.findOne({ username: req.params.username }).populate({ path: 'name', select: 'firstName lastName fullName' });
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -53,9 +55,8 @@ router.get('/username/:username', async (req, res) => {
 router.patch('/:id', function (req, res, next) {
   try {
     const { id } = req.params;
-    const {firstName, lastName, username, password, role} = req.body;
-    const fullName= `${firstName} ${lastName}`
-       Login.findByIdAndUpdate(id, {fullName, username, password, role}, {
+    const {username, password, role} = req.body;
+       Login.findByIdAndUpdate(id, {username, password, role}, {
       new: true,
     })
       .then((result) => {
@@ -83,6 +84,19 @@ router.delete('/:id', function (req, res, next) {
   } catch (err) {
     res.sendStatus(500);
   }
+});
+router.delete('/employeeId/:employeeId', async (req, res) => {
+  try {
+    Login.findOneAndDelete({ employeeId: req.params.employeeId })
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.status(400).send({ message: err.message });
+    });
+} catch (err) {
+  res.sendStatus(500);
+}
 });
 
 module.exports = router;

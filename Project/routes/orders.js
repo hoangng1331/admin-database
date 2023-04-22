@@ -15,8 +15,11 @@ router.get('/', function (req, res, next) {
   try {
     Order.find()
       .populate('customer')
-      .populate('employee')
+      .populate('shipper')
+      .populate('employeeLogin')
       .populate('orderDetails.product')
+      .populate('orderDetails.size')
+      .populate('orderDetails.color')
       // .populate({ path: 'orderDetails.product', populate: { path: 'category' } })
       .then((result) => {
         res.send(result);
@@ -35,8 +38,11 @@ router.get('/:id', function (req, res, next) {
     const { id } = req.params;
     Order.findById(id)
       .populate('customer')
-      .populate('employee')
+      .populate('shipper')
+      .populate('employeeLogin')
       .populate('orderDetails.product')
+      .populate('orderDetails.size')
+      .populate('orderDetails.color')
       // .populate({ path: 'orderDetails.product', populate: { path: 'category' } })
       .then((result) => {
         res.send(result);
@@ -48,6 +54,45 @@ router.get('/:id', function (req, res, next) {
     res.sendStatus(500);
   }
 });
+
+router.get('/:id/orderDetails', function (req, res, next) {
+  const { id } = req.params;
+  Order.findOne({_id: id})
+  .populate('orderDetails.product')
+  .populate('orderDetails.size')
+  .populate('orderDetails.color')
+    .then((result) => {
+      if (!result) {
+        res.status(404).send({ message: 'Order not found.' });
+      } else {
+        res.send(result.orderDetails);
+      }
+    })
+    .catch((err) => {
+      res.status(400).send({ message: err.message });
+    });
+});
+
+router.get('/:id/orderDetails/:_id', function (req, res, next) {
+  const { id, _id } = req.params;
+  Order.findById(id)
+    .then((result) => {
+      if (!result) {
+        res.status(404).send({ message: 'Order not found.' });
+      } else {
+        const orderDetails = result.orderDetails.find(detail => detail._id.toString() === _id);
+        if (!orderDetails) {
+          res.status(404).send({ message: 'Order detail not found.' });
+        } else {
+          res.send(orderDetails);
+        }
+      }
+    })
+    .catch((err) => {
+      res.status(400).send({ message: err.message });
+    });
+});
+
 
 /* POST */
 router.post('/', function (req, res, next) {
@@ -69,6 +114,28 @@ router.post('/', function (req, res, next) {
     res.sendStatus(500);
   }
 });
+router.post('/:id/orderDetails', function (req, res, next) {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    Order.findOneAndUpdate(
+      { _id: id },
+      { $push: { orderDetails: data } },
+      { new: true }
+    )
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).send({ message: err.message });
+      });
+  } catch (err) {
+    res.sendStatus(500);
+  }
+});
+
 
 // PATCH
 router.patch('/:id', function (req, res, next) {
@@ -105,6 +172,25 @@ router.delete('/:id', function (req, res, next) {
     res.sendStatus(500);
   }
 });
+router.delete('/:id/orderDetails/:_id', function (req, res, next) {
+  try {
+    const { id, _id } = req.params;
+    Order.findOneAndUpdate(
+      { _id: id },
+      { $pull: { orderDetails: { _id: _id } } },
+      { new: true }
+    )
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ message: err.message });
+      });
+  } catch (err) {
+    res.sendStatus(500);
+  }
+});
+
 
 // ------------------------------------------------------------------------------------------------
 // QUESTIONS 8

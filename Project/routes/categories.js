@@ -121,7 +121,6 @@ router.get('/:_id', function (req, res, next) {
 router.post('/', function (req, res, next) {
   try {
     const data = req.body;
-    
     const newItem = new Category(data);
     
     newItem

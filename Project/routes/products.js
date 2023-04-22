@@ -49,6 +49,38 @@ router.get('/:id', function (req, res, next) {
   }
 });
 
+router.get('/:id/variants/:colorId/sizes/:sizeId', function (req, res, next) {
+  const { id, colorId, sizeId } = req.params;
+  Product.findOne(
+    { _id: id, variants: { $elemMatch: { colorId, 'sizes.sizeId': sizeId } } },
+    { 'variants.$': 1 }
+  ) 
+    .then((result) => {
+      if (!result) {
+        res.status(404).send({ message: 'Product not found.' });
+      } else {
+        const variant = result.variants[0];
+        if (!variant) {
+          res.status(404).send({ message: 'Product variant not found.' });
+        } else {
+          const size = variant.sizes.find((s) => String(s.sizeId) === sizeId);
+          if (!size) {
+            res.status(404).send({ message: 'Product size not found.' });
+          } else {
+            res.send(size);
+          }
+        }
+      }
+    })
+    .catch((err) => {
+      res.status(400).send({ message: err.message });
+    });
+});
+
+
+
+
+
 /* POST */
 router.post('/', function (req, res, next) {
   try {
@@ -89,6 +121,28 @@ router.patch('/:id', function (req, res, next) {
     res.sendStatus(500);
   }
 });
+
+router.patch('/:id/variants/:colorId/sizes/:sizeId', function (req, res, next) {
+  const { id, colorId, sizeId } = req.params;
+  const { quantity } = req.body;
+  Product.updateOne(
+    { _id: id, variants: { $elemMatch: { colorId, 'sizes.sizeId': sizeId } } },
+    { $set: { 'variants.$[i].sizes.$[j].quantity': quantity } },
+    { arrayFilters: [{ 'i.colorId': colorId }, { 'j.sizeId': sizeId }] }
+  )
+    .then((result) => {
+      if (result.nModified === 0) {
+        res.status(404).send({ message: 'Product not found.' });
+      } else {
+        res.send({ message: 'Quantity updated.' });
+      }
+    })
+    .catch((err) => {
+      res.status(400).send({ message: err.message });
+    });
+});
+
+
 
 // DELETE
 router.delete('/:id', function (req, res, next) {

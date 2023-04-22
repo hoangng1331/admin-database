@@ -30,7 +30,7 @@ var upload = multer({
 }).single('file');
 
 // http://127.0.0.1:5000/upload/categories/63293fea50d2f78624e0c6f3/image
-router.post('/:collectionName/:id/image', async (req, res, next) => {
+router.post('/:collectionName/:id', async (req, res, next) => {
   const { collectionName, id } = req.params;
 
   const found = await findDocument(id, collectionName);
@@ -45,10 +45,10 @@ router.post('/:collectionName/:id/image', async (req, res, next) => {
       res.status(500).json({ type: 'UnknownError', err: err });
     } else {
       // UPDATE MONGODB
-      updateDocument(id, { imageUrl: `/uploads/${collectionName}/${id}/${req.file.filename}` }, collectionName);
+      updateDocument(id, { imageUrl: `/uploads/${collectionName}/${id}/${req.file?.filename}` }, collectionName);
       //
       // console.log('host', req.get('host'));
-      const publicUrl = `${req.protocol}://${req.get('host')}/uploads/${collectionName}/${id}/${req.file.filename}`;
+      const publicUrl = `${req.protocol}://${req.get('host')}/uploads/${collectionName}/${id}/${req.file?.filename}`;
       res.status(200).json({ ok: true, publicUrl: publicUrl });
     }
   });

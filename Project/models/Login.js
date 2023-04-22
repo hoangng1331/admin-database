@@ -4,8 +4,7 @@ const autoIncrement = require("mongoose-auto-increment");
 // const AutoIncrement = require('mongoose-sequence')(mongoose);
   autoIncrement.initialize(mongoose.connection);
 const loginSchema = new Schema(
-   { lastName: { type: String, required: true },
-    firstName: { type: String, required: true },  
+   {employeeId: { type: Schema.Types.ObjectId, ref: "Employee", required: false },
     role: { type: String, required: true },
     username: { type: String, required: true },
     password: { type: String, required: true },
@@ -14,33 +13,15 @@ const loginSchema = new Schema(
     versionKey: false,
   },
 );
-loginSchema.virtual('fullName').get(function () {
-  return this.lastName + ' ' + this.firstName;
+loginSchema.virtual("name", {
+  ref: "Employee",
+  localField: "employeeId",
+  foreignField: "_id",
+  justOne: true,
 });
 loginSchema.set('toObject', { virtuals: true });
 // Virtuals in JSON
 loginSchema.set('toJSON', { virtuals: true });
-loginSchema.plugin(autoIncrement.plugin, {
-  model: "Login",
-  field: "employeeId",
-  startAt: 1,
-  incrementBy: 1, 
-  });
-
-  loginSchema.pre('save', function (next) {
-    let doc = this;
-    // Check if the document is new
-    if (doc.isNew) {
-      let b =(doc.employeeId).toString().padStart(6, '0');
-      doc.employeeId = b ;
-    }
-    next();
-  });
-
-
-  const Login = model('Login', loginSchema);  
-  // RESET pId
-  // Login.resetCount(function(err, nextCount) {
-  //   console.log('Auto-increment has been reset!'); 
-  // });
+const Login = model('Login', loginSchema);  
+ 
 module.exports = Login;

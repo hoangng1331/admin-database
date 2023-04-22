@@ -62,7 +62,7 @@ function updateDocument(id, data, collectionName) {
       .then((client) => {
         const dbo = client.db(DATABASE_NAME);
         const collection = dbo.collection(collectionName);
-        const query = { _id: ObjectId(id) };
+        const query = { _id: new ObjectId(id) };
         collection
           .findOneAndUpdate(query, { $set: data })
           .then((result) => {
@@ -113,7 +113,7 @@ function deleteDocument(id, collectionName) {
       .then((client) => {
         const dbo = client.db(DATABASE_NAME);
         const collection = dbo.collection(collectionName);
-        const query = { _id: ObjectId(id) };
+        const query = { _id:  new ObjectId(id) };
         collection
           .deleteOne(query)
           .then((result) => {
@@ -163,7 +163,8 @@ function findDocument(id, collectionName) {
       .then((client) => {
         const dbo = client.db(DATABASE_NAME);
         const collection = dbo.collection(collectionName);
-        const query = { _id: ObjectId(id) };
+        const query = { _id: new ObjectId(id) };
+
         collection
           .findOne(query)
           .then((result) => {

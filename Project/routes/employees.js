@@ -45,13 +45,13 @@ router.get("/:id", function (req, res, next) {
 /* POST */
 router.post("/", async function (req, res, next) {
   try {
-    const { firstName, lastName, role, username, password } = req.body;
     const data = req.body;
     const newItem = new Employee(data);
-    const newLogin = new Login({ firstName, lastName, role, username, password });
     await newItem
       .save()
       .then((result) => {
+        const { role, username, password } = req.body;
+        const newLogin = new Login({ role, username, password, employeeId: result._id, });
         newLogin.save();
         res.send(result);
       })

@@ -36,9 +36,34 @@ const employeeSchema = new Schema({
       // message: (props) => `{props.value} is not a valid email!`,
     },
   },
+  deliveryArea: {
+    type: String,
+    required: false,
+    validate: {
+      validator: (value) => {
+        if (["Hòa Vang", "Hải Châu", "Thanh Khê", "Liên Chiểu", "Ngũ Hành Sơn", "Cẩm Lệ", "Sơn Trà"].includes(value)) {
+          return true;
+        }
+        return false;
+      },
+      message: `Status: {VALUE} is invalid!`,
+    },
+  },
   address: { type: String, required: true },
   birthday: { type: Date },
-  role: {type:String, required: true},
+  role: {
+    type: String,
+    required: true,
+    validate: {
+      validator: (value) => {
+        if (["Quản lý", "Chăm sóc khách hàng", "Giao hàng"].includes(value)) {
+          return true;
+        }
+        return false;
+      },
+      message: `Status: {VALUE} is invalid!`,
+    },
+  },
   username: {type:String, required: true, unique: true},
   password: {type:String, required: true}
 });
@@ -52,22 +77,6 @@ employeeSchema.virtual('fullName').get(function () {
 employeeSchema.set('toObject', { virtuals: true });
 // Virtuals in JSON
 employeeSchema.set('toJSON', { virtuals: true });
-employeeSchema.plugin(autoIncrement.plugin, {
-  model: "Employee",
-  field: "_id",
-  startAt: 1,
-  incrementBy: 1, 
-  });
-
-  employeeSchema.pre('save', function (next) {
-    let doc = this;
-    // Check if the document is new
-    if (doc.isNew) {
-      let b =(doc._id).toString().padStart(6, '0');
-      doc._id = b ;
-    }
-    next();
-  });
 
 const Employee = model("Employee", employeeSchema);
 // const Employee = mongoose.model("Employee", employeeSchema);

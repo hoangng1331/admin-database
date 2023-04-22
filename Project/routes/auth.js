@@ -20,26 +20,7 @@ const loginSchema = yup.object({
 });
 
 // ------------------------------------------------------------------------------------------------
-// LOGIN (WITH MONGODB)
-// ------------------------------------------------------------------------------------------------
-router.post('/login-db', async (req, res, next) => {
-  const { username, password } = req.body;
-
-  const found = await Login.findOne({
-    username,
-    password,
-    role
-  });
-
-  if (found) {
-    return res.status(200).send({ ok: true, loggedInUser: found });
-  }
-
-  return res.status(401).send({ ok: false });
-});
-
-// ------------------------------------------------------------------------------------------------
-// LOGIN WITH JWT + REFRESH TOKEN
+// LOGIN WITH JWT + REFRESH TOKEN 
 // ------------------------------------------------------------------------------------------------
 router.post('/login-jwt', async (req, res, next) => {
   const { username, password, role } = req.body;
@@ -195,7 +176,7 @@ const allowRoles = (...roles) => {
 // ------------------------------------------------------------------------------------------------
 // CALL API JWT AUTHENTICATION & CHECK ROLES
 // ------------------------------------------------------------------------------------------------
-router.get('/roles', passport.authenticate('jwt', { session: false }), allowRoles('managers', 'supervisors'), function (req, res, next) {
+router.get('/roles', passport.authenticate('jwt', { session: false }), allowRoles('managers', 'shippers', "admin"), function (req, res, next) {
   res.json({ ok: true });
 });
 

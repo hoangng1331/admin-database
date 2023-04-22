@@ -32,6 +32,8 @@ const customerSchema = new Schema({
   },
   address: { type: String, required: true },
   birthday: { type: Date },
+  username: { type: String, required: true },
+  password: { type: String, required: true },
 });
 
 // Virtuals
