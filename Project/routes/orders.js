@@ -15,6 +15,7 @@ router.get('/', function (req, res, next) {
   try {
     Order.find()
       .populate('customer')
+      .populate('verifier')
       .populate('shipper')
       .populate('employeeLogin')
       .populate('orderDetails.product')
@@ -39,6 +40,7 @@ router.get('/:id', function (req, res, next) {
     Order.findById(id)
       .populate('customer')
       .populate('shipper')
+      .populate('verifier')
       .populate('employeeLogin')
       .populate('orderDetails.product')
       .populate('orderDetails.size')
