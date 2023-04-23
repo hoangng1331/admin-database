@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 const colorSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true},
   hexcode: 
   {type: [
     {
-    hex: { type: String, required: true },
+    hex: { type: String, required: true, unique: true },
     hsl: { type:[{
       a: { type: Number},
       h: { type: Number},

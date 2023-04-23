@@ -8,7 +8,6 @@ const cors = require('cors');
 // var usersRouter = require('./routes/users');
 var categoriesRouter = require('./routes/categories');
 var customersRouter = require('./routes/customers')
-var suppliersRouter = require('./routes/suppliers');
 var productsRouter = require('./routes/products');
 var colorsRouter = require('./routes/colors');
 var employeesRouter = require('./routes/employees');
@@ -19,6 +18,7 @@ var sizesRouter = require('./routes/sizes')
 var uploadRouter = require('./routes/upload');
 
 const { findDocuments } = require('./helper/MongoDbHelper');
+const bodyParser = require('body-parser');
 
 var app = express();
 
@@ -26,6 +26,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -40,7 +41,6 @@ app.use(
 // app.use('/users', usersRouter);
 app.use('/categories', categoriesRouter);
 app.use('/customers', customersRouter);
-app.use('/suppliers', suppliersRouter);
 app.use('/products', productsRouter);
 app.use('/colors', colorsRouter);
 app.use('/employees', employeesRouter);

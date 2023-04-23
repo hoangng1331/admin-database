@@ -97,14 +97,27 @@ const orderSchema = new Schema({
       message: `Payment type: {VALUE} is invalid!`,
     },
   },
+  importStatus: {
+    type: String,
+    required: false,
+    validate: {
+      validator: (value) => {
+        if (["Chờ nhập kho", "Đã nhập kho"].includes(value.toUpperCase())) {
+          return true;
+        }
+        return false;
+      },
+      message: `Payment type: {VALUE} is invalid!`,
+    },
+  },
   note: {type: String, required: false},
   status: {
     type: String,
     required: true,
-    default: "WAITING",
+    default: "Waiting",
     validate: {
       validator: (value) => {
-        if (["WAITING", "COMPLETED", "CANCELED", "CONFIRMED", "SHIPPING"].includes(value)) {
+        if (["Waiting", "Completed", "Canceled", "Confirmed", "Shipping"].includes(value)) {
           return true;
         }
         return false;

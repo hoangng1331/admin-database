@@ -240,5 +240,60 @@ router.get('/questions/8', function (req, res, next) {
     res.sendStatus(500);
   }
 });
+router.post('/status', function(req, res, next) {
+  try {
+    const { shipperId, status } = req.body;
+
+    const query = {};
+    if (shipperId) query.shipper = shipperId;
+    if (status) query.status = status;
+
+    Order.find(query)
+      .populate('customer')
+      .populate('shipper')
+      .populate('verifier')
+      .populate('employeeLogin')
+      .populate('orderDetails.product')
+      .populate('orderDetails.size')
+      .populate('orderDetails.color')
+      .then((result) => {
+        res.send(result); // trả về các đơn hàng kết quả
+      })
+      .catch((err) => {
+        res.status(400).send({ message: err.message });
+      });
+  } catch (err) {
+    res.sendStatus(500);
+  }
+});
+
+router.post('/status&date', async (req, res) => {
+  try {
+    const { status, shippedDateFrom, shippedDateTo } = req.body;
+    const query = {
+      status: status || 'Completed', 
+      shippedDate: {
+        $gte: shippedDateFrom || new Date('1900-01-01'), 
+        $lte: shippedDateTo || new Date(), 
+      },
+    };
+    // Query the database using the built query object
+    const orders = await Order.find(query)
+      .populate('customer')
+      .populate('shipper')
+      .populate('verifier')
+      .populate('employeeLogin')
+      .populate('orderDetails.product')
+      .populate('orderDetails.size')
+      .populate('orderDetails.color');
+
+    res.send(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+
 
 module.exports = router;

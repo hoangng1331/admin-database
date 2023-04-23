@@ -5,7 +5,7 @@ const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 
 const productSchema = Schema(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true},
     categoryId: { type: Schema.Types.ObjectId, ref: 'Category', required: false },
     description:{ type: String, required: false },
     preserveGuide: { type: String, required: false },
