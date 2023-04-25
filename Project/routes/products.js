@@ -160,103 +160,49 @@ router.delete('/:id', function (req, res, next) {
   }
 });
 
-// ------------------------------------------------------------------------------------------------
-// QUESTIONS 1
-// ------------------------------------------------------------------------------------------------
-// https://www.mongodb.com/docs/manual/reference/operator/query/
-// http://localhost:9000/products/questions/1?discount=10
+//Query
 
-const question1Schema = yup.object({
-  query: yup.object({
-    discount: yup.number().integer().min(0).max(100).required(),
-  }),
+router.post('/category', function(req, res, next) {
+  try {
+    const { categoryId } = req.body;
+
+    const query = {};
+    if (categoryId) query.categoryId = categoryId;
+
+    Product.find(query)
+    .populate('category')
+    .populate('color')
+    .populate('size')
+      .then((result) => {
+        res.send(result); 
+      })
+      .catch((err) => {
+        res.status(400).send({ message: err.message });
+      });
+  } catch (err) {
+    res.sendStatus(500);
+  }
 });
+router.post('/promotion', function(req, res, next) {
+  try {
+    const { promotion } = req.body;
 
-// router.get('/questions/1', validateSchema(question1Schema), function (req, res, next) {
-//   try {
-//     let discount = req.query.discount;
-//     let query = { discount: { $lte: discount } };
-//     Product.find(query)
-//       // .populate('productname')
-//       .populate('supplier')
-//       .then((result) => {
-//         res.send(result);
-//       })
-//       .catch((err) => {
-//         res.status(400).send({ message: err.message });
-//       });
-//   } catch (err) {
-//     res.sendStatus(500);
-//   }
-// });
+    const query = {};
+    if (promotion) query.promotion = promotion;
 
-// ------------------------------------------------------------------------------------------------
-// QUESTIONS 1b
-// ------------------------------------------------------------------------------------------------
-// https://www.mongodb.com/docs/manual/reference/operator/query/
-// router.get('/questions/1b', function (req, res, next) {
-//   try {
-//     let query = { discount: { $lte: 10 } };
-//     Product.find(query)
-//       .populate('product')
-//       // .populate('supplier')
-//       .then((result) => {
-//         res.send(result);
-//       })
-//       .catch((err) => {
-//         res.status(400).send({ message: err.message });
-//       });
-//   } catch (err) {
-//     res.sendStatus(500);
-//   }
-// });
-
-// ------------------------------------------------------------------------------------------------
-// QUESTIONS 2
-// ------------------------------------------------------------------------------------------------
-// https://www.mongodb.com/docs/manual/reference/operator/query/
-// http://localhost:9000/products/questions/2?stock=10
-// router.get('/questions/2', function (req, res, next) {
-//   try {
-//     let stock = req.query.stock;
-//     let query = { stock: { $lte: stock } };
-//     Product.find(query)
-//       .populate('category')
-//       // .populate('supplier')
-//       .then((result) => {
-//         res.send(result);
-//       })
-//       .catch((err) => {
-//         res.status(400).send({ message: err.message });
-//       });
-//   } catch (err) {
-//     res.sendStatus(500);
-//   }
-// });
-// ------------------------------------------------------------------------------------------------
-// QUESTIONS 3
-// ------------------------------------------------------------------------------------------------
-// http://localhost:9000/products/questions/3?price=100000
-// router.get('/questions/3', async (req, res, next) => {
-//   try {
-//     // let finalPrice = price * (100 - discount) / 100;
-//     const s = { $subtract: [100, '$discount'] }; // (100 - 5)
-//     const m = { $multiply: ['$price', s] }; // price * 95
-//     const d = { $divide: [m, 100] }; // price * 95 / 100
-
-//     const { price } = req.query;
-
-//     let aggregate = [{ $match: { $expr: { $lte: [d, price] } } }];
-//     Product.aggregate(aggregate)
-//       .then((result) => {
-//         res.send(result);
-//       })
-//       .catch((err) => {
-//         res.status(400).json(err);
-//       });
-//   } catch (error) {
-//     res.status(500).json(error);
-//   }
-// });
+    Product.find(query)
+    .populate('category')
+    .populate('color')
+    .populate('size')
+      .then((result) => {
+        res.send(result); 
+      })
+      .catch((err) => {
+        res.status(400).send({ message: err.message });
+      });
+  } catch (err) {
+    res.sendStatus(500);
+  }
+});
 
 module.exports = router;

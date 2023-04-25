@@ -242,11 +242,46 @@ router.get('/questions/8', function (req, res, next) {
 });
 router.post('/status', function(req, res, next) {
   try {
-    const { shipperId, status } = req.body;
+    const { status, shippingFee } = req.body;
 
     const query = {};
-    if (shipperId) query.shipper = shipperId;
-    if (status) query.status = status;
+    if (status) {query.status = status};
+    if (shippingFee) {query.shippingFee = shippingFee};
+
+    Order.find(query)
+      .populate('customer')
+      .populate('shipper')
+      .populate('verifier')
+      .populate('employeeLogin')
+      .populate('orderDetails.product')
+      .populate('orderDetails.size')
+      .populate('orderDetails.color')
+      .then((result) => {
+        res.send(result); // trả về các đơn hàng kết quả
+      })
+      .catch((err) => {
+        res.status(400).send({ message: err.message });
+      });
+  } catch (err) {
+    res.sendStatus(500);
+  }
+});
+router.post('/status&shipperId', function(req, res, next) {
+  try {
+    const { shipperId, status, shippingFee } = req.body;
+
+    const query = {};
+    if (shipperId && status) {
+      query.shipperId = shipperId;
+      query.status = status;
+    } else if (shippingFee && status) {
+      query.shippingFee = shippingFee;
+      query.status = status;
+    } else {
+      res.status(400).send({ message: 'Invalid request. Please provide at least one parameter.' });
+      return;
+    }
+
 
     Order.find(query)
       .populate('customer')
@@ -267,16 +302,16 @@ router.post('/status', function(req, res, next) {
   }
 });
 
-router.post('/status&date', async (req, res) => {
+router.post('/status&date&shipper', async (req, res) => {
   try {
-    const { status, shippedDateFrom, shippedDateTo } = req.body;
-    const query = {
-      status: status || 'Completed', 
-      shippedDate: {
-        $gte: shippedDateFrom || new Date('1900-01-01'), 
-        $lte: shippedDateTo || new Date(), 
-      },
-    };
+    const { status, shipperId, shippedDateFrom, shippedDateTo } = req.body;
+    const query = {};
+    if (shipperId) {query.shipperId = shipperId};
+    if (shippedDateFrom && shippedDateTo){query.shippedDate ={
+      $gte: shippedDateFrom, 
+      $lte: shippedDateTo, 
+    } }
+    if (status) {query.status = status};
     // Query the database using the built query object
     const orders = await Order.find(query)
       .populate('customer')

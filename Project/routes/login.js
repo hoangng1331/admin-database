@@ -55,8 +55,8 @@ router.get('/username/:username', async (req, res) => {
 router.patch('/:id', function (req, res, next) {
   try {
     const { id } = req.params;
-    const {username, password, role} = req.body;
-       Login.findByIdAndUpdate(id, {username, password, role}, {
+    const {username, password, role, status, active} = req.body;
+       Login.findByIdAndUpdate(id, {username, password, role, status, active}, {
       new: true,
     })
       .then((result) => {

@@ -8,6 +8,34 @@ const loginSchema = new Schema(
     role: { type: String, required: true },
     username: { type: String, required: true },
     password: { type: String, required: true },
+    status: {
+      type: String,
+      required: true,
+      default: "Offline",
+      validate: {
+        validator: (value) => {
+          if (["Online", "Offline"].includes(value.toUpperCase())) {
+            return true;
+          }
+          return false;
+        },
+        message: `Payment type: {VALUE} is invalid!`,
+      },
+    },
+    active: {
+      type: String,
+      required: true,
+      default: "Activated",
+      validate: {
+        validator: (value) => {
+          if (["Activated", "Deactivated"].includes(value.toUpperCase())) {
+            return true;
+          }
+          return false;
+        },
+        message: `Payment type: {VALUE} is invalid!`,
+      },
+    },
   },
   {
     versionKey: false,

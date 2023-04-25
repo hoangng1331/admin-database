@@ -86,7 +86,8 @@ const orderSchema = new Schema({
   },
   paymentStatus: {
     type: String,
-    required: false,
+    required: true,
+    default: "Chưa thanh toán",
     validate: {
       validator: (value) => {
         if (["Chưa thanh toán", "Đã thanh toán"].includes(value.toUpperCase())) {
