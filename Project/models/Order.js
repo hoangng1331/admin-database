@@ -76,7 +76,7 @@ const orderSchema = new Schema({
     default: "CASH",
     validate: {
       validator: (value) => {
-        if (["CASH", "CREDIT CARD", "BANK TRANSFER"].includes(value.toUpperCase())) {
+        if (["CASH", "CREDIT CARD", "BANK TRANSFER"].includes(value)) {
           return true;
         }
         return false;
@@ -90,7 +90,7 @@ const orderSchema = new Schema({
     default: "Chưa thanh toán",
     validate: {
       validator: (value) => {
-        if (["Chưa thanh toán", "Đã thanh toán"].includes(value.toUpperCase())) {
+        if (["Chưa thanh toán", "Đã thanh toán", "Hủy"].includes(value)) {
           return true;
         }
         return false;
@@ -103,7 +103,7 @@ const orderSchema = new Schema({
     required: false,
     validate: {
       validator: (value) => {
-        if (["Chờ nhập kho", "Đã nhập kho"].includes(value.toUpperCase())) {
+        if (["Chờ nhập kho", "Đã nhập kho"].includes(value)) {
           return true;
         }
         return false;

@@ -242,11 +242,13 @@ router.get('/questions/8', function (req, res, next) {
 });
 router.post('/status', function(req, res, next) {
   try {
-    const { status, shippingFee } = req.body;
+    const { status, shippingFee, paymentMethod, paymentStatus } = req.body;
 
     const query = {};
     if (status) {query.status = status};
     if (shippingFee) {query.shippingFee = shippingFee};
+    if (paymentMethod) {query.paymentMethod = paymentMethod};
+    if (paymentStatus) {query.paymentStatus = paymentStatus};
 
     Order.find(query)
       .populate('customer')
