@@ -15,7 +15,7 @@ var { validateSchema } = require('../validation/validateSchema');
 const loginSchema = yup.object({
   body: yup.object({
     username: yup.string().email().required(),
-    password: yup.string().min(3).max(31).required(),
+    password: yup.string().min(1).max(31).required(),
     }),
 });
 
@@ -28,7 +28,6 @@ router.post('/login-jwt', async (req, res, next) => {
   const found = await Login.findOne({
     username,
     password,
-    role
   });
 
   if (found) {

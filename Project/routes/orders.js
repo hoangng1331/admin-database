@@ -242,12 +242,12 @@ router.get('/questions/8', function (req, res, next) {
 });
 router.post('/status', function(req, res, next) {
   try {
-    const { status, shippingFee, paymentMethod, paymentStatus } = req.body;
+    const { status, deliveryArea, paymentType, paymentStatus } = req.body;
 
     const query = {};
     if (status) {query.status = status};
-    if (shippingFee) {query.shippingFee = shippingFee};
-    if (paymentMethod) {query.paymentMethod = paymentMethod};
+    if (deliveryArea) {query.deliveryArea = deliveryArea};
+    if (paymentType) {query.paymentType = paymentType};
     if (paymentStatus) {query.paymentStatus = paymentStatus};
 
     Order.find(query)

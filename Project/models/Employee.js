@@ -70,7 +70,7 @@ const employeeSchema = new Schema({
 
 // Virtuals
 employeeSchema.virtual('fullName').get(function () {
-  return this.lastName + ' ' + this.firstName;
+  return this.lastName + this.firstName;
 });
 
 // Virtuals in console.log()

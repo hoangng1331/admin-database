@@ -73,10 +73,10 @@ const orderSchema = new Schema({
   paymentType: {
     type: String,
     required: true,
-    default: "CASH",
+    default: "Cash",
     validate: {
       validator: (value) => {
-        if (["CASH", "CREDIT CARD", "BANK TRANSFER"].includes(value)) {
+        if (["Cash", "Credit Card", "Bank Transfer"].includes(value)) {
           return true;
         }
         return false;
