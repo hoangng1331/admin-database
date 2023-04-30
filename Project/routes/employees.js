@@ -50,7 +50,7 @@ router.post("/", async function (req, res, next) {
     await newItem
       .save()
       .then((result) => {
-        const { role, username, password } = req.body;
+        const { role, username, password, } = req.body;
         const newLogin = new Login({ role, username, password, employeeId: result._id, });
         newLogin.save();
         res.send(result);

@@ -5,8 +5,32 @@ const autoIncrement = require("mongoose-auto-increment");
   autoIncrement.initialize(mongoose.connection);
 const loginSchema = new Schema(
    {employeeId: { type: Schema.Types.ObjectId, ref: "Employee", required: false },
-    role: { type: String, required: true },
-    username: { type: String, required: true },
+   role: {
+    type: String,
+    required: true,
+    validate: {
+      validator: (value) => {
+        if (["Quản lý", "Chăm sóc khách hàng", "Giao hàng"].includes(value)) {
+          return true;
+        }
+        return false;
+      },
+      message: `Role: {VALUE} is invalid!`,
+    },
+  },
+  username: {
+    required: true,
+    type: String,
+    unique: true,
+    validate: {
+      validator: function (value) {
+        const phoneRegex = /^[A-Za-z0-9_\.@]+$/;
+        return phoneRegex.test(value);
+      },
+      message: `{VALUE} is not a valid phone!`,
+      // message: (props) => `{props.value} is not a valid email!`,
+    },
+  },
     password: { type: String, required: true },
     status: {
       type: String,
@@ -14,28 +38,18 @@ const loginSchema = new Schema(
       default: "Offline",
       validate: {
         validator: (value) => {
-          if (["Online", "Offline"].includes(value.toUpperCase())) {
+          if (["Online", "Offline"].includes(value)) {
             return true;
           }
           return false;
         },
-        message: `Payment type: {VALUE} is invalid!`,
+        message: `Status type: {VALUE} is invalid!`,
       },
     },
     active: {
-      type: String,
-      required: true,
-      default: "Activated",
-      validate: {
-        validator: (value) => {
-          if (["Activated", "Deactivated"].includes(value.toUpperCase())) {
-            return true;
-          }
-          return false;
-        },
-        message: `Payment type: {VALUE} is invalid!`,
-      },
-    },
+      type: Boolean,
+      default: false,
+    }
   },
   {
     versionKey: false,

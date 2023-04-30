@@ -33,6 +33,7 @@ const productSchema = Schema(
             type: Schema.Types.ObjectId,
             ref: "Color",
             required: false,
+            unique: true,
           },
           sizes: {
             type: [
@@ -41,6 +42,7 @@ const productSchema = Schema(
                   type: Schema.Types.ObjectId,
                   ref: "Size",
                   required: false,
+                  unique: true,
                 },
                 quantity: { type: Number, min: 0, default: 0, required: false },
               },
@@ -52,7 +54,7 @@ const productSchema = Schema(
       ],
       required: true,
     },
-    image_url: String,
+    imageUrl: Array,
   },
   {
     versionKey: false,

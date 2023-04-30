@@ -14,7 +14,7 @@ var router = express.Router();
 router.get("/", function (req, res, next) {
   try {
     Login.find()
-      .populate({ path: 'name', select: 'firstName lastName fullName' })
+      .populate({ path: 'name', select: 'firstName lastName fullName phoneNumber' })
       .then((result) => {
         res.send(result);
       })
@@ -31,7 +31,7 @@ router.get("/:id", function (req, res, next) {
   try {
     const { id } = req.params;
     Login.findById(id)
-    .populate({ path: 'name', select: 'firstName lastName fullName' })
+    .populate({ path: 'name', select: 'firstName lastName fullName phoneNumber' })
       .then((result) => {
         res.send(result);
       })
@@ -44,7 +44,7 @@ router.get("/:id", function (req, res, next) {
 });
 router.get('/username/:username', async (req, res) => {
   try {
-    const user = await Login.findOne({ username: req.params.username }).populate({ path: 'name', select: 'firstName lastName fullName' });
+    const user = await Login.findOne({ username: req.params.username }).populate({ path: 'name', select: 'firstName lastName fullName phoneNumber' });
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });

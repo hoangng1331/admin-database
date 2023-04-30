@@ -20,6 +20,7 @@ const customerSchema = new Schema({
     required: [true, 'email is required'],
   },
   phoneNumber: {
+    required: true,
     type: String,
     validate: {
       validator: function (value) {
@@ -32,7 +33,19 @@ const customerSchema = new Schema({
   },
   address: { type: String, required: true },
   birthday: { type: Date },
-  username: { type: String, required: true, unique: true},
+  username: {
+    required: true,
+    type: String,
+    unique: true,
+    validate: {
+      validator: function (value) {
+        const phoneRegex = /^[A-Za-z0-9_\.@]+$/;
+        return phoneRegex.test(value);
+      },
+      message: `{VALUE} is not a valid phone!`,
+      // message: (props) => `{props.value} is not a valid email!`,
+    },
+  },
   password: { type: String, required: true },
 });
 

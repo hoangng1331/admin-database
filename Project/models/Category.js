@@ -5,7 +5,7 @@ const autoIncrement = require("mongoose-auto-increment");
   autoIncrement.initialize(mongoose.connection);
 
 const categorySchema = new Schema({
-  name: { type: String, required: [true, "Tên sản phẩm bắt buộc phải nhập"] },
+  name: { type: String, required: [true, "Tên danh mục bắt buộc phải nhập"], unique: true},
 },);
 //  
 // categorySchema.plugin(autoIncrement.plugin, {

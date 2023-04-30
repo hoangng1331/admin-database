@@ -14,6 +14,7 @@ const employeeSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: {
+    required: true,
     type: String,
     validate: {
       validator: function (value) {
@@ -26,6 +27,7 @@ const employeeSchema = new Schema({
     required: [true, 'email is required'],
   },
   phoneNumber: {
+    required: true,
     type: String,
     validate: {
       validator: function (value) {
@@ -61,16 +63,28 @@ const employeeSchema = new Schema({
         }
         return false;
       },
-      message: `Status: {VALUE} is invalid!`,
+      message: `Role: {VALUE} is invalid!`,
     },
   },
-  username: {type:String, required: true, unique: true},
+  username: {
+    required: true,
+    type: String,
+    unique: true,
+    validate: {
+      validator: function (value) {
+        const phoneRegex = /^[A-Za-z0-9_\.@]+$/;
+        return phoneRegex.test(value);
+      },
+      message: `{VALUE} is not a valid phone!`,
+      // message: (props) => `{props.value} is not a valid email!`,
+    },
+  },
   password: {type:String, required: true}
 });
 
 // Virtuals
 employeeSchema.virtual('fullName').get(function () {
-  return this.lastName + this.firstName;
+  return this.lastName + " " + this.firstName;
 });
 
 // Virtuals in console.log()

@@ -140,7 +140,7 @@ const orderSchema = new Schema({
         }
         return false;
       },
-      message: `Status: {VALUE} is invalid!`,
+      message: `Delivery Area: {VALUE} is invalid!`,
     },
   },
   customerName: { type: String, require: false },
@@ -262,6 +262,7 @@ orderSchema.virtual('productTotalValue').get(function() {
 
   return productTotalValue;
 });
+
 
 // Virtuals in console.log()
 orderSchema.set("toObject", { virtuals: true });

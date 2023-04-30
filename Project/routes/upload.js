@@ -9,6 +9,7 @@ const { updateDocument, findDocument } = require('../helper/MongoDbHelper');
 const UPLOAD_DIRECTORY = './public/uploads';
 
 var upload = multer({
+
   storage: multer.diskStorage({
     contentType: multer.AUTO_CONTENT_TYPE,
     destination: function (req, file, callback) {
@@ -27,7 +28,7 @@ var upload = multer({
       callback(null, safeFileName);
     },
   }),
-}).single('file');
+}).array('file');
 
 // http://127.0.0.1:5000/upload/categories/63293fea50d2f78624e0c6f3/image
 router.post('/:collectionName/:id', async (req, res, next) => {
@@ -45,17 +46,30 @@ router.post('/:collectionName/:id', async (req, res, next) => {
       res.status(500).json({ type: 'UnknownError', err: err });
     } else {
       // UPDATE MONGODB
-      updateDocument(id, { imageUrl: `/uploads/${collectionName}/${id}/${req.file?.filename}` }, collectionName);
-      //
-      // console.log('host', req.get('host'));
-      const publicUrl = `${req.protocol}://${req.get('host')}/uploads/${collectionName}/${id}/${req.file?.filename}`;
-      res.status(200).json({ ok: true, publicUrl: publicUrl });
+      let images = found.images;
+      if (!images) {
+        images = [];
+      }
+    
+      await updateDocument(id, { imageUrl: images }, collectionName);
+
+      req.files.forEach((file) => {
+        const newImageUrl = `/uploads/${collectionName}/${id}/${file.filename}`;
+        images.push(newImageUrl);
+      });
+    
+      const publicUrls = req.files.map((file) => {
+        return `${req.protocol}://${req.get('host')}/uploads/${collectionName}/${id}/${req.file?.filename}`;
+      });
+    
+      res.status(200).json({ ok: true, publicUrls: publicUrls });
+    
     }
   });
 });
 
 // http://127.0.0.1:5000/upload/categories/63293fea50d2f78624e0c6f3/images
-router.post('/:collectionName/:id/images', async (req, res, next) => {
+router.post('/:collectionName/:id/', async (req, res, next) => {
   const { collectionName, id } = req.params;
   const found = await findDocument(id, collectionName);
   if (!found) {

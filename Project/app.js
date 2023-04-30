@@ -4,6 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
+const passport = require('passport');
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const jwtSettings = require('./constants/jwtSettings');
 // var indexRouter = require('./routes/index');
 // var usersRouter = require('./routes/users');
 var categoriesRouter = require('./routes/categories');
@@ -37,17 +41,31 @@ app.use(
     origin: '*',
   }),
 );
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+
+
+// Passport: jwt
+const opts = {};
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = jwtSettings.SECRET;
+opts.audience = jwtSettings.AUDIENCE;
+opts.issuer = jwtSettings.ISSUER;
+
+passport.use(
+  new JwtStrategy(opts, function (payload, done) {
+    console.log(payload);
+      let error = null;
+      let user = payload.account;
+      return done(error, user);
+  }),
+);
+app.use('/auth', authRouter);
+app.use('/login', loginRouter);
 app.use('/categories', categoriesRouter);
 app.use('/customers', customersRouter);
 app.use('/products', productsRouter);
 app.use('/colors', colorsRouter);
 app.use('/employees', employeesRouter);
-// app.use('/customers', customersRouter);
 app.use('/orders', ordersRouter);
-app.use('/auth', authRouter);
-app.use('/login', loginRouter);
 app.use('/upload', uploadRouter);
 app.use('/sizes', sizesRouter);
 // app.use('/ordersdetail', ordersdetailRouter);

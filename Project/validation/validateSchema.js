@@ -13,7 +13,7 @@ const validateSchema = (schema) => async (req, res, next) => {
 };
 const loginSchema = yup.object({
   body: yup.object({
-    phonenumber: yup.number().min(10).max(10).required(),
+    username: yup.string().min(1).max(24).required(),
     password: yup.string().min(1).max(24).required(),
   }),
 });

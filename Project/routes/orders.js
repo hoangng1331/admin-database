@@ -215,31 +215,6 @@ router.delete('/:id/orderDetails/:_id', function (req, res, next) {
 // ------------------------------------------------------------------------------------------------
 // QUESTIONS 8
 // ------------------------------------------------------------------------------------------------
-router.get('/questions/8', function (req, res, next) {
-  try {
-    const fromDate = new Date();
-    fromDate.setHours(0, 0, 0, 0);
-
-    const toDate = new Date(new Date().setDate(fromDate.getDate() + 1));
-    toDate.setHours(0, 0, 0, 0);
-
-    const compareStatus = { $eq: ['$status', 'COMPLETED'] };
-    const compareFromDate = { $gte: ['$createdDate', fromDate] };
-    const compareToDate = { $lt: ['$createdDate', toDate] };
-    const query = { $expr: { $and: [compareStatus, compareFromDate, compareToDate] } };
-
-    Order.find(query)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch((err) => {
-        res.status(400).send({ message: err.message });
-      });
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
-});
 router.post('/status', function(req, res, next) {
   try {
     const { status, deliveryArea, paymentType, paymentStatus } = req.body;
@@ -306,7 +281,7 @@ router.post('/status&shipperId', function(req, res, next) {
 
 router.post('/status&date&shipper', async (req, res) => {
   try {
-    const { status, shipperId, shippedDateFrom, shippedDateTo } = req.body;
+    const { status, shipperId, shippedDateFrom, shippedDateTo, deliveryArea } = req.body;
     const query = {};
     if (shipperId) {query.shipperId = shipperId};
     if (shippedDateFrom && shippedDateTo){query.shippedDate ={
@@ -314,6 +289,7 @@ router.post('/status&date&shipper', async (req, res) => {
       $lte: shippedDateTo, 
     } }
     if (status) {query.status = status};
+    if (deliveryArea) {query.deliveryArea = deliveryArea};
     // Query the database using the built query object
     const orders = await Order.find(query)
       .populate('customer')
@@ -330,7 +306,5 @@ router.post('/status&date&shipper', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-
 
 module.exports = router;
