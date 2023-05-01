@@ -8,17 +8,14 @@ const { updateDocument, findDocument } = require('../helper/MongoDbHelper');
 
 const UPLOAD_DIRECTORY = './public/uploads';
 
-var upload = multer({
-
+const upload = multer({
   storage: multer.diskStorage({
     contentType: multer.AUTO_CONTENT_TYPE,
     destination: function (req, file, callback) {
       const { id, collectionName } = req.params;
 
       const PATH = `${UPLOAD_DIRECTORY}/${collectionName}/${id}`;
-      // console.log('PATH', PATH);
       if (!fs.existsSync(PATH)) {
-        // Create a directory
         fs.mkdirSync(PATH, { recursive: true });
       }
       callback(null, PATH);
@@ -28,49 +25,11 @@ var upload = multer({
       callback(null, safeFileName);
     },
   }),
-}).array('file');
+}).array('files[]');
 
-// http://127.0.0.1:5000/upload/categories/63293fea50d2f78624e0c6f3/image
-router.post('/:collectionName/:id', async (req, res, next) => {
-  const { collectionName, id } = req.params;
-
-  const found = await findDocument(id, collectionName);
-  if (!found) {
-    return res.status(410).json({ message: `${collectionName} with id ${id} not found` });
-  }
-
-  upload(req, res, async (err) => {
-    if (err instanceof multer.MulterError) {
-      res.status(500).json({ type: 'MulterError', err: err });
-    } else if (err) {
-      res.status(500).json({ type: 'UnknownError', err: err });
-    } else {
-      // UPDATE MONGODB
-      let images = found.images;
-      if (!images) {
-        images = [];
-      }
-    
-      await updateDocument(id, { imageUrl: images }, collectionName);
-
-      req.files.forEach((file) => {
-        const newImageUrl = `/uploads/${collectionName}/${id}/${file.filename}`;
-        images.push(newImageUrl);
-      });
-    
-      const publicUrls = req.files.map((file) => {
-        return `${req.protocol}://${req.get('host')}/uploads/${collectionName}/${id}/${req.file?.filename}`;
-      });
-    
-      res.status(200).json({ ok: true, publicUrls: publicUrls });
-    
-    }
-  });
-});
-
-// http://127.0.0.1:5000/upload/categories/63293fea50d2f78624e0c6f3/images
 router.post('/:collectionName/:id/', async (req, res, next) => {
   const { collectionName, id } = req.params;
+
   const found = await findDocument(id, collectionName);
   if (!found) {
     return res.status(410).json({ message: `${collectionName} with id ${id} not found` });
@@ -82,23 +41,39 @@ router.post('/:collectionName/:id/', async (req, res, next) => {
     } else if (err) {
       res.status(500).json({ type: 'UnknownError', err: err });
     } else {
-      // UPDATE MONGODB
-      const newImageUrl = `/uploads/${collectionName}/${id}/${req.file.filename}`;
+      const newImageUrl = req.files.map((file) => `/uploads/${collectionName}/${id}/${file.filename}`);
+      await updateDocument(id, { imageUrl: newImageUrl }, collectionName);
 
-      let images = found.images;
-      if (!images) {
-        images = [];
-      }
-      images.push(newImageUrl);
-
-      await updateDocument(id, { images: images }, collectionName);
-
-      // console.log('host', req.get('host'));
-      const publicUrl = `${req.protocol}://${req.get('host')}/uploads/${collectionName}/${id}/${req.file.filename}`;
+      const publicUrl = newImageUrl.map((imageUrl) => `${req.protocol}://${req.get('host')}${imageUrl}`);
       res.status(200).json({ ok: true, publicUrl: publicUrl });
     }
   });
 });
+
+router.post('/:collectionName/:id/images', async (req, res, next) => {
+  const { collectionName, id } = req.params;
+  const found = await findDocument(id, collectionName);
+  if (!found) {
+    return res.status(410).json({ message: `${collectionName} with id ${id} not found` });
+  }
+
+  upload(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      res.status(500).json({ type: 'MulterError', err: err });
+    } else if (err) {
+      res.status(500).json({ type: 'UnknownError', err: err });
+    } else {
+      const newImageUrls = req.files.map((file) => `/uploads/${collectionName}/${id}/${file.filename}`);
+      let imageUrl = found.imageUrl || [];
+      imageUrl = [...imageUrl, ...newImageUrls];
+      await updateDocument(id, { imageUrl: imageUrl }, collectionName);
+
+      const publicUrls = newImageUrls.map((imageUrl) => `${req.protocol}://${req.get('host')}${imageUrl}`);
+      res.status(200).json({ ok: true, publicUrls: publicUrls });
+    }
+  });
+});
+
 
 function toSafeFileName(fileName) {
   const fileInfo = path.parse(fileName);
