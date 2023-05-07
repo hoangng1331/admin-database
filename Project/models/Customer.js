@@ -31,7 +31,6 @@ const customerSchema = new Schema({
       // message: (props) => `{props.value} is not a valid email!`,
     },
   },
-  address: { type: String, required: true },
   birthday: { type: Date },
   username: {
     required: true,
