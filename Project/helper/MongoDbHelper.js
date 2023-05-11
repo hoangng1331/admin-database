@@ -56,7 +56,30 @@ function insertDocuments(list, collectionName) {
 
 // ----------------------------------------------------------------------------
 // UPDATE: Sửa
-function updateDocument(id, data, collectionName) {
+// function updateDocument(id, data, collectionName) {
+//   return new Promise((resolve, reject) => {
+//     MongoClient.connect(CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true })
+//       .then((client) => {
+//         const dbo = client.db(DATABASE_NAME);
+//         const collection = dbo.collection(collectionName);
+//         const query = { _id: new ObjectId(id) };
+//         collection
+//           .findOneAndUpdate(query, { $set: data })
+//           .then((result) => {
+//             client.close();
+//             resolve(result);
+//           })
+//           .catch((err) => {
+//             client.close();
+//             reject(err);
+//           });
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
+// }
+function updateDocument(id, data, collectionName, options = {}) {
   return new Promise((resolve, reject) => {
     MongoClient.connect(CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true })
       .then((client) => {
@@ -64,10 +87,10 @@ function updateDocument(id, data, collectionName) {
         const collection = dbo.collection(collectionName);
         const query = { _id: new ObjectId(id) };
         collection
-          .findOneAndUpdate(query, { $set: data })
+          .findOneAndUpdate(query, data, { ...options, returnOriginal: false })
           .then((result) => {
             client.close();
-            resolve(result);
+            resolve(result.value);
           })
           .catch((err) => {
             client.close();
@@ -182,6 +205,36 @@ function findDocument(id, collectionName) {
       });
   });
 }
+// function findDocument(id, collectionName, variantId) {
+//   return new Promise((resolve, reject) => {
+//     MongoClient.connect(CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true })
+//       .then((client) => {
+//         const dbo = client.db(DATABASE_NAME);
+//         const collection = dbo.collection(collectionName);
+//         const query = { 
+//           _id: new ObjectId(id), 
+//           'variants._id': new ObjectId(variantId) 
+//         };
+
+//         collection
+//           .findOne(query)
+//           .then((result) => {
+//             resolve(result);
+//           })
+//           .catch((err) => {
+//             reject(err);
+//           })
+//           .finally(() => {
+//             client.close();
+//           });
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
+// }
+
+
 // ----------------------------------------------------------------------------
 // FIND: Tìm kiếm (nhiều)
 function findDocuments({ query = null, sort = null, limit = 50, aggregate = [], skip = 0, projection = null }, collectionName) {

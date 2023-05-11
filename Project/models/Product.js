@@ -48,11 +48,12 @@ const productSchema = Schema(
           },
           price: { type: Number, min: 0, default: 0, required: false },
           discount: { type: Number, min: 0, default: 0, required: false },
+          imageUrl: Array,
         },
       ],
       required: true,
     },
-    imageUrl: Array,
+
   },
   {
     versionKey: false,
