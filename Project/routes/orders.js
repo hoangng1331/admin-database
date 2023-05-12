@@ -18,6 +18,7 @@ router.get('/', function (req, res, next) {
       .populate('verifier')
       .populate('shipper')
       .populate('employeeLogin')
+      .populate('receiveMoneyConfirmer')
       .populate('orderDetails.product')
       .populate('orderDetails.size')
       .populate('orderDetails.color')
@@ -45,6 +46,7 @@ router.get('/:id', function (req, res, next) {
       .populate('orderDetails.product')
       .populate('orderDetails.size')
       .populate('orderDetails.color')
+      .populate('receiveMoneyConfirmer')
       // .populate({ path: 'orderDetails.product', populate: { path: 'category' } })
       .then((result) => {
         res.send(result);
@@ -230,6 +232,7 @@ router.post('/status', function(req, res, next) {
       .populate('shipper')
       .populate('verifier')
       .populate('employeeLogin')
+      .populate('receiveMoneyConfirmer')
       .populate('orderDetails.product')
       .populate('orderDetails.size')
       .populate('orderDetails.color')
@@ -268,6 +271,35 @@ router.post('/status&shipperId', function(req, res, next) {
       .populate('orderDetails.product')
       .populate('orderDetails.size')
       .populate('orderDetails.color')
+      .populate('receiveMoneyConfirmer')
+      .then((result) => {
+        res.send(result); // trả về các đơn hàng kết quả
+      })
+      .catch((err) => {
+        res.status(400).send({ message: err.message });
+      });
+  } catch (err) {
+    res.sendStatus(500);
+  }
+});
+router.post('/status&customerId', function(req, res, next) {
+  try {
+    const { customerId, status } = req.body;
+
+    const query = {};
+    if (customerId) {query.customerId = customerId;}
+      if (status) { query.status = status;}
+   
+
+    Order.find(query)
+      .populate('customer')
+      .populate('shipper')
+      .populate('verifier')
+      .populate('employeeLogin')
+      .populate('orderDetails.product')
+      .populate('orderDetails.size')
+      .populate('orderDetails.color')
+      .populate('receiveMoneyConfirmer')
       .then((result) => {
         res.send(result); // trả về các đơn hàng kết quả
       })
@@ -297,6 +329,7 @@ router.post('/status&date&shipper', async (req, res) => {
       .populate('verifier')
       .populate('employeeLogin')
       .populate('orderDetails.product')
+      .populate('receiveMoneyConfirmer')
       .populate('orderDetails.size')
       .populate('orderDetails.color');
 

@@ -7,6 +7,20 @@ const autoIncrement = require("mongoose-auto-increment");
 const customerSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
+  gender: {
+    type: String,
+    required: true,
+    default: "Female",
+    validate: {
+      validator: (value) => {
+        if (["Female", "Male"].includes(value)) {
+          return true;
+        }
+        return false;
+      },
+      message: `Payment type: {VALUE} is invalid!`,
+    },
+  }, 
   email: {
     type: String,
     validate: {

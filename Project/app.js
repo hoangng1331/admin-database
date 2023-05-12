@@ -12,6 +12,7 @@ const jwtSettings = require('./constants/jwtSettings');
 // var usersRouter = require('./routes/users');
 var categoriesRouter = require('./routes/categories');
 var customersRouter = require('./routes/customers')
+var customerLoginRouter = require('./routes/customerLogin')
 var productsRouter = require('./routes/products');
 var colorsRouter = require('./routes/colors');
 var employeesRouter = require('./routes/employees');
@@ -62,6 +63,7 @@ app.use('/auth', authRouter);
 app.use('/login', loginRouter);
 app.use('/categories', categoriesRouter);
 app.use('/customers', customersRouter);
+app.use('/customerLogin', customerLoginRouter);
 app.use('/products', productsRouter);
 app.use('/colors', colorsRouter);
 app.use('/employees', employeesRouter);

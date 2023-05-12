@@ -13,6 +13,7 @@ const orderDetailSchema = new Schema({
     ref: "Product",
     required: true,
   },
+  imageUrl: String,
   colorId: { type: Schema.Types.ObjectId, ref: "Color", required: true },
   sizeId: { type: Schema.Types.ObjectId, ref: "Size", required: true },
   quantity: { type: Number, require: true, min: 0 },
@@ -90,7 +91,7 @@ const orderSchema = new Schema({
     default: "Chưa thanh toán",
     validate: {
       validator: (value) => {
-        if (["Chưa thanh toán", "Đã thanh toán", "Hủy"].includes(value)) {
+        if (["Chưa thanh toán", "Đã thanh toán", "Hủy", "Hủy và đã hoàn tiền", "Hủy và chưa hoàn tiền"].includes(value)) {
           return true;
         }
         return false;
@@ -130,6 +131,7 @@ const orderSchema = new Schema({
   employeeLoginId: { type: Schema.Types.ObjectId, ref: "Login", required: false },
   verifyId: { type: Schema.Types.ObjectId, ref: "Login", required: false },
   shipperId: { type: Schema.Types.ObjectId, ref: "Employee", required: false },
+  receiveMoneyConfirmId: { type: Schema.Types.ObjectId, ref: "Login", required: false },
   deliveryArea: {
     type: String,
     required: false,
@@ -143,7 +145,7 @@ const orderSchema = new Schema({
       message: `Delivery Area: {VALUE} is invalid!`,
     },
   },
-  customerName: { type: String, require: false },
+  receiverName: { type: String, require: false },
   email: {
     type: String,
     validate: {
@@ -168,7 +170,7 @@ const orderSchema = new Schema({
       // message: (props) => `{props.value} is not a valid email!`,
     },
   },
-  address: { type: String, required: false },
+  address: { type: String, required: true },
    orderDetails: [orderDetailSchema],
   shippingFee: { type: Number, default: 0 },
 });
@@ -183,6 +185,12 @@ orderSchema.virtual("customer", {
 orderSchema.virtual("shipper", {
   ref: "Employee",
   localField: "shipperId",
+  foreignField: "_id",
+  justOne: true,
+});
+orderSchema.virtual("receiveMoneyConfirmer", {
+  ref: "Login",
+  localField: "receiveMoneyConfirmId",
   foreignField: "_id",
   justOne: true,
 });
